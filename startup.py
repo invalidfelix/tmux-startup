@@ -1,5 +1,7 @@
 import os
 import time
+import subprocess
+import io
 
 
 print("\nDeleting old tmux sessions...")
@@ -35,11 +37,21 @@ for dir1 in os.listdir(home):
     else:
         run(dir1)
         
+print("------------------------------------")
 for name in names:
+    found_result = False
     result = subprocess.run(["tmux", "capture-pane", "-pt", name, "-S", "3", "-E", "10"], stdout=subprocess.PIPE)
     output = result.stdout.decode("utf-8")
     
-    if "online" in output:
-        print(f"Info: {name} is online")
-    else:
-        print(f"Warning: {name} is offline")
+    for line in io.StringIO(output):
+        if "Error" in line:
+            print(f"Error for {name}: {line}")
+            found_result = True
+            break
+        elif "online" in line:
+            print(f"Success:", line)
+            found_result = True
+            break
+    
+    if not found_result:
+        print(f"Error: Could not start {name}")
