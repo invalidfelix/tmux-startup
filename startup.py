@@ -12,6 +12,7 @@ time.sleep(5)
 
 
 names = []
+home = "../home/"
 
 
 def run(path):
@@ -21,9 +22,6 @@ def run(path):
     os.system(f"tmux send-keys -t 'cd {path}' C-m")
     os.system(f"tmux send-keys 'python3 main.py' C-m")
     names.append(name)
-    
-    
-home = "../home/"
 
 
 for dir1 in os.listdir(home):
@@ -45,7 +43,8 @@ for name in names:
     
     for line in io.StringIO(output):
         if "Error" in line:
-            print(f"Error for {name}: {line}")
+            error = line.split("\n")[0]
+            print(f"Error for ({name}): {error}")
             found_result = True
             break
         elif "online" in line:
@@ -54,4 +53,6 @@ for name in names:
             break
     
     if not found_result:
-        print(f"Error: Could not start {name}")
+        print(f"Error:({name}) Could not start main file")
+
+print()
